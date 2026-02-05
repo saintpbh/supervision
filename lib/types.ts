@@ -28,6 +28,12 @@ export interface ReportData {
     verbatim: string; // Key Dialogue (Efficiency) or Full Transcript (Academic)
     sessionSummary?: string; // Optional summary
     fullTranscript?: string; // Explicit field for full transcript if needed separate
+
+    // Psychological Testing (New)
+    sctData?: string; // Sentence Completion Test
+    mmpiData?: string; // MMPI-2 profile/results
+    sctInterpretation?: string; // AI interpretation of SCT
+    mmpiAnalysis?: string; // AI interpretation of MMPI-2
 }
 
 export interface ReportEntry {
@@ -64,5 +70,9 @@ export const initialReportData: ReportData = {
 
     verbatim: '',
     sessionSummary: '',
-    fullTranscript: ''
+    fullTranscript: '',
+    sctData: '',
+    mmpiData: '',
+    sctInterpretation: '',
+    mmpiAnalysis: ''
 };

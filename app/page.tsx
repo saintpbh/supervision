@@ -178,10 +178,10 @@ export default function Home() {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          transcript: transcriptText,
-          selectedModel,
           apiKey: apiKey,
-          reportMode: data.reportMode
+          reportMode: data.reportMode,
+          sctData: data.sctData,
+          mmpiData: data.mmpiData
         })
       });
 
@@ -198,7 +198,9 @@ export default function Home() {
           sessionSummary: result.sessionSummary || prev.sessionSummary,
           patternObservation: result.patternObservation || prev.patternObservation,
           synthesis: result.synthesis || prev.synthesis,
-          verbatim: result.verbatim || prev.verbatim
+          verbatim: result.verbatim || prev.verbatim,
+          sctInterpretation: result.sctInterpretation || prev.sctInterpretation,
+          mmpiAnalysis: result.mmpiAnalysis || prev.mmpiAnalysis
         }));
         if (result.usage) {
           recordUsage(result.usage.promptTokens, result.usage.completionTokens, selectedModel);

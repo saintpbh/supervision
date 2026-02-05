@@ -56,6 +56,13 @@ export function generateReportHtml(data: ReportData, aiContent?: string): string
       <div class="section highlight-section">
         <h2>B. 사례 개념화 및 상담자 판단 (Core)</h2>
         <div class="content-block">
+            ${data.sctInterpretation || data.mmpiAnalysis ? `
+            <div style="margin-bottom: 2rem; padding: 1.5rem; background: rgba(99, 102, 241, 0.05); border-radius: 12px; border: 1px solid rgba(99, 102, 241, 0.1);">
+                <h3 style="margin-top: 0; color: var(--primary); font-size: 1.1rem;">📊 심리검사 기반 임상적 소견</h3>
+                ${data.mmpiAnalysis ? `<p><strong>MMPI-2 분석:</strong> ${data.mmpiAnalysis}</p>` : ''}
+                ${data.sctInterpretation ? `<p><strong>SCT 해석:</strong> ${data.sctInterpretation}</p>` : ''}
+            </div>
+            ` : ''}
             ${conceptualizationSection}
         </div>
       </div>
@@ -141,11 +148,31 @@ function generateAcademicReportHtml(data: ReportData, aiContent?: string): strin
         <div class="section">
           <h2>III. 심리 검사 결과 및 해석</h2>
           <div class="content-block">
-              <p><em>(실시된 심리검사가 있다면 상세 내용을 기술하십시오. 예: MMPI-2, TCI, SCT 등)</em></p>
-              <ul>
-                  <li>BDI-II: 점수 (해석)</li>
-                  <li>BAI: 점수 (해석)</li>
-              </ul>
+              ${data.mmpiAnalysis || data.sctInterpretation ? `
+                <div class="test-results">
+                    ${data.mmpiData ? `
+                    <div style="margin-bottom: 20px;">
+                        <h3 style="font-size: 1.1rem; color: #333;">1. MMPI-2 다면적 인성검사</h3>
+                        <p style="background: #f5f5f5; padding: 10px; border-radius: 4px; font-family: monospace;">데이터: ${data.mmpiData}</p>
+                        <p style="line-height: 1.7;"><strong>[임상적 해석]:</strong> ${data.mmpiAnalysis}</p>
+                    </div>
+                    ` : ''}
+                    
+                    ${data.sctData ? `
+                    <div style="margin-bottom: 20px;">
+                        <h3 style="font-size: 1.1rem; color: #333;">2. SCT 문장완성검사</h3>
+                        <p style="background: #f5f5f5; padding: 10px; border-radius: 4px; font-style: italic;">주요 반응: ${data.sctData}</p>
+                        <p style="line-height: 1.7;"><strong>[역동적 해석]:</strong> ${data.sctInterpretation}</p>
+                    </div>
+                    ` : ''}
+                </div>
+              ` : `
+                <p><em>(실시된 심리검사가 있다면 상세 내용을 기술하십시오. 예: MMPI-2, TCI, SCT 등)</em></p>
+                <ul>
+                    <li>BDI-II: 점수 (해석)</li>
+                    <li>BAI: 점수 (해석)</li>
+                </ul>
+              `}
           </div>
         </div>
   

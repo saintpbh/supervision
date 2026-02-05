@@ -15,12 +15,14 @@ const analysisSchema = z.object({
     sessionSummary: z.string().optional().describe('상담 세션의 주요 내용 요약'),
     patternObservation: z.string().optional().describe('내담자에게서 관찰된 반복되는 행동/심리 패턴'),
     synthesis: z.string().optional().describe('사례에 대한 종합적 이해 및 전문가적 판단'),
-    verbatim: z.string().optional().describe('전체 축어록 내용')
+    verbatim: z.string().optional().describe('전체 축어록 내용'),
+    sctInterpretation: z.string().optional().describe('문장완성검사(SCT) 반응에 대한 임상적 해석'),
+    mmpiAnalysis: z.string().optional().describe('MMPI-2 프로파일 점수에 기반한 심리 진단적 분석')
 });
 
 export async function POST(req: Request) {
     try {
-        const { transcript, selectedModel, apiKey, reportMode } = await req.json();
+        const { transcript, selectedModel, apiKey, reportMode, sctData, mmpiData } = await req.json();
 
         if (!transcript) {
             return new Response('No transcript provided', { status: 400 });
@@ -71,6 +73,10 @@ export async function POST(req: Request) {
         [Transcript]:
         ${transcript}
         
+        [Psychological Test Data]:
+        - SCT: ${sctData || '제공되지 않음'}
+        - MMPI-2: ${mmpiData || '제공되지 않음'}
+
         [수행 지침]:
         1. 내담자의 인적사항(이름, 연령대, 성별)을 파악하십시오.
         2. 내담자의 주 호소 문제(Chief Complaint)를 상담 심리학적 용어를 사용하여 기술하십시오. ${reportMode === 'efficiency' ? '가장 핵심적인 한 문장으로 압축하십시오.' : '상세하고 구체적으로 기술하십시오.'}
@@ -78,8 +84,11 @@ export async function POST(req: Request) {
         4. 축어록의 맥락을 통해 상담자가 이번 회기에서 가장 고민하거나 수퍼바이저에게 묻고 싶어 하는 '핵심 질문(Core Question)'을 추론하십시오.
         5. 세션 전체의 흐름을 상담 역동 중심으로 요약하십시오. ${reportMode === 'efficiency' ? '핵심 포인트 3-4개 위주로 간결하게 작성하십시오.' : '내담자와 상담자의 상호작용과 감정 변화를 포함하여 풍부하게 작성하십시오.'}
         6. 내담자에게서 반복되는 행동 패턴이나 방어 기제 등의 '반복 패턴(Pattern Observation)'을 추출하십시오.
-        7. 위 분석을 종합하여 사례의 핵심을 꿰뚫는 '사례 개념화(Synthesis)'를 전문적으로 작성하십시오.
-        8. 모든 답변은 전문적인 한국어로 작성하십시오.
+        7. [핵심] 만약 심리검사 데이터(SCT, MMPI-2)가 제공되었다면, 해당 데이터를 전문적으로 해석하십시오(sctInterpretation, mmpiAnalysis).
+           - MMPI-2는 타당도 척도와 임상 척도의 상승 양상을 통해 성격 구조와 증상을 분석하십시오.
+           - SCT는 주요 반응에 투사된 무의식적 역동과 대상 관계를 파악하십시오.
+        8. 위 모든 분석을 종합하여 사례의 핵심을 꿰뚫는 '사례 개념화(Synthesis)'를 전문적으로 작성하십시오. 검사 결과가 실제 상담 장면에서의 내담자 모습과 어떻게 연결되는지(Clinical Integration)를 중점적으로 다루십시오.
+        9. 모든 답변은 전문적인 한국어로 작성하십시오.
       `,
         });
 

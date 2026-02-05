@@ -1,4 +1,5 @@
 import { ReportData } from '../../lib/types';
+import PsychTestInput from './PsychTestInput';
 
 interface Props {
     data: ReportData;
@@ -92,6 +93,8 @@ export default function Step2_Facts({ data, updateData }: Props) {
                     placeholder="예: 대학교 휴학 중, 편의점 아르바이트"
                 />
             </div>
+
+            <PsychTestInput data={data} updateData={updateData} />
         </div>
     );
 }
