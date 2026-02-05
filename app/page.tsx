@@ -172,7 +172,8 @@ export default function Home() {
         body: JSON.stringify({
           transcript: transcriptText,
           selectedModel,
-          apiKey: apiKey
+          apiKey: apiKey,
+          reportMode: data.reportMode
         })
       });
 
@@ -187,6 +188,8 @@ export default function Home() {
           chiefComplaint: result.chiefComplaint || prev.chiefComplaint,
           coreQuestion: result.coreQuestion || prev.coreQuestion,
           sessionSummary: result.sessionSummary || prev.sessionSummary,
+          patternObservation: result.patternObservation || prev.patternObservation,
+          synthesis: result.synthesis || prev.synthesis,
           verbatim: result.verbatim || prev.verbatim
         }));
         if (result.usage) {
@@ -520,10 +523,39 @@ export default function Home() {
                     <h2 className="gradient-text" style={{ fontSize: '2.25rem', fontWeight: 900 }}>축어록 자동 분석</h2>
                     <button onClick={() => setShowTranscriptModal(false)} style={{ background: 'none', border: 'none', color: 'var(--text-muted)', cursor: 'pointer', fontSize: '1.5rem' }}>&times;</button>
                   </div>
+                  <div style={{ display: 'flex', gap: '1rem', marginBottom: '1.5rem' }}>
+                    <button
+                      className="glass-panel"
+                      onClick={() => updateData('reportMode', 'efficiency')}
+                      style={{
+                        flex: 1, padding: '1rem', border: data.reportMode === 'efficiency' ? '2px solid var(--secondary)' : '1px solid var(--border)',
+                        background: data.reportMode === 'efficiency' ? 'rgba(236, 72, 153, 0.1)' : 'transparent',
+                        textAlign: 'center', cursor: 'pointer', borderRadius: '12px', transition: 'var(--transition)'
+                      }}
+                    >
+                      <div style={{ fontSize: '1.5rem', marginBottom: '4px' }}>⚡️</div>
+                      <div style={{ fontWeight: 700, color: data.reportMode === 'efficiency' ? 'var(--secondary)' : 'var(--text-primary)' }}>핵심형</div>
+                      <div style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>10분 완성 요약</div>
+                    </button>
+                    <button
+                      className="glass-panel"
+                      onClick={() => updateData('reportMode', 'academic')}
+                      style={{
+                        flex: 1, padding: '1rem', border: data.reportMode === 'academic' ? '2px solid var(--primary)' : '1px solid var(--border)',
+                        background: data.reportMode === 'academic' ? 'rgba(99, 102, 241, 0.1)' : 'transparent',
+                        textAlign: 'center', cursor: 'pointer', borderRadius: '12px', transition: 'var(--transition)'
+                      }}
+                    >
+                      <div style={{ fontSize: '1.5rem', marginBottom: '4px' }}>🎓</div>
+                      <div style={{ fontWeight: 700, color: data.reportMode === 'academic' ? 'var(--primary)' : 'var(--text-primary)' }}>표준형</div>
+                      <div style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>심사용 정석</div>
+                    </button>
+                  </div>
+
                   <p className="step-description">분석할 축어록 전체를 붙여넣으세요. AI가 상담 맥락을 분석하여 보고서 항목을 채워줍니다.</p>
                   <textarea
                     className="textarea"
-                    style={{ minHeight: '350px', fontSize: '1rem', borderRadius: '12px', background: 'rgba(0,0,0,0.2)', border: '1px solid var(--border)' }}
+                    style={{ minHeight: '350px', fontSize: '1rem', borderRadius: '12px', background: 'rgba(0,0,0,0.2)', border: '1px solid var(--border)', color: 'var(--text-primary)' }}
                     value={transcriptText}
                     onChange={e => setTranscriptText(e.target.value)}
                     placeholder="(상담자): 안녕하세요.&#10;(내담자): 네, 안녕하세요..."

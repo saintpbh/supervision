@@ -13,12 +13,14 @@ const analysisSchema = z.object({
     chiefComplaint: z.string().optional().describe('내담자의 주 호소 문제 (핵심 어구)'),
     coreQuestion: z.string().optional().describe('상담자가 이번 회기에서 가장 고민하는 핵심 질문'),
     sessionSummary: z.string().optional().describe('상담 세션의 주요 내용 요약'),
+    patternObservation: z.string().optional().describe('내담자에게서 관찰된 반복되는 행동/심리 패턴'),
+    synthesis: z.string().optional().describe('사례에 대한 종합적 이해 및 전문가적 판단'),
     verbatim: z.string().optional().describe('전체 축어록 내용')
 });
 
 export async function POST(req: Request) {
     try {
-        const { transcript, selectedModel, apiKey } = await req.json();
+        const { transcript, selectedModel, apiKey, reportMode } = await req.json();
 
         if (!transcript) {
             return new Response('No transcript provided', { status: 400 });
@@ -64,16 +66,20 @@ export async function POST(req: Request) {
         당신은 상담 심리 전문가이자 숙련된 수퍼바이저입니다. 
         제공된 상담 축어록(Verbatim)을 분석하여 수퍼비전 보고서 작성을 위한 핵심 데이터를 추출하십시오.
         
+        [보고서 유형]: ${reportMode === 'efficiency' ? '핵심형 (빠르고 간결한 요약 중심)' : '표준형 (심층 분석 및 학위/자격 심사용 상세 기술)'}
+        
         [Transcript]:
         ${transcript}
         
         [수행 지침]:
         1. 내담자의 인적사항(이름, 연령대, 성별)을 파악하십시오.
-        2. 내담자의 주 호소 문제(Chief Complaint)를 상담 심리학적 용어를 사용하여 명확히 기술하십시오.
+        2. 내담자의 주 호소 문제(Chief Complaint)를 상담 심리학적 용어를 사용하여 기술하십시오. ${reportMode === 'efficiency' ? '가장 핵심적인 한 문장으로 압축하십시오.' : '상세하고 구체적으로 기술하십시오.'}
         3. 내담자가 상담을 받게 된 촉발 사건(Trigger Event)을 객관적으로 서술하십시오.
         4. 축어록의 맥락을 통해 상담자가 이번 회기에서 가장 고민하거나 수퍼바이저에게 묻고 싶어 하는 '핵심 질문(Core Question)'을 추론하십시오.
-        5. 세션 전체의 흐름을 상담 역동 중심으로 요약하십시오.
-        6. 모든 답변은 전문적인 한국어로 작성하십시오.
+        5. 세션 전체의 흐름을 상담 역동 중심으로 요약하십시오. ${reportMode === 'efficiency' ? '핵심 포인트 3-4개 위주로 간결하게 작성하십시오.' : '내담자와 상담자의 상호작용과 감정 변화를 포함하여 풍부하게 작성하십시오.'}
+        6. 내담자에게서 반복되는 행동 패턴이나 방어 기제 등의 '반복 패턴(Pattern Observation)'을 추출하십시오.
+        7. 위 분석을 종합하여 사례의 핵심을 꿰뚫는 '사례 개념화(Synthesis)'를 전문적으로 작성하십시오.
+        8. 모든 답변은 전문적인 한국어로 작성하십시오.
       `,
         });
 
