@@ -1,44 +1,62 @@
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
 
 :root {
-  /* Premium Color Palette */
-  --primary: #4F46E5; /* Indigo 600 */
-  --primary-hover: #4338CA; /* Indigo 700 */
-  --secondary: #EC4899; /* Pink 500 */
-  --accent: #8B5CF6; /* Violet 500 */
-  
-  --background: #F9FAFB;
-  --surface: #FFFFFF;
-  --surface-glass: rgba(255, 255, 255, 0.8);
-  
-  --text-primary: #111827;
-  --text-secondary: #4B5563;
-  --text-on-primary: #FFFFFF;
-  
-  --border: #E5E7EB;
-  --border-focus: #4F46E5;
-  
+  /* Premium Slate & Indigo Palette */
+  --primary: #6366f1;
+  /* Indigo 500 */
+  --primary-hover: #4f46e5;
+  /* Indigo 600 */
+  --secondary: #ec4899;
+  /* Pink 500 */
+  --accent: #a855f7;
+  /* Purple 500 */
+
+  --background: #f8fafc;
+  /* Slate 50 */
+  --surface: #ffffff;
+  --surface-glass: rgba(255, 255, 255, 0.7);
+
+  --text-primary: #0f172a;
+  /* Slate 900 */
+  --text-secondary: #475569;
+  /* Slate 600 */
+  --text-muted: #94a3b8;
+  /* Slate 400 */
+  --text-on-primary: #ffffff;
+
+  --border: #e2e8f0;
+  /* Slate 200 */
+  --border-focus: #6366f1;
+
   /* Effects */
   --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
   --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
   --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
-  --glass-blur: blur(12px);
+  --glass-blur: blur(16px);
+  --radius-xl: 1.5rem;
   --radius-lg: 1rem;
-  --radius-md: 0.5rem;
-  
-  --transition: all 0.2s ease-in-out;
+  --radius-md: 0.75rem;
+
+  --transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 @media (prefers-color-scheme: dark) {
   :root {
-    --background: #0F172A;
-    --surface: #1E293B;
-    --surface-glass: rgba(30, 41, 59, 0.8);
-    
-    --text-primary: #F9FAFB;
-    --text-secondary: #9CA3AF;
-    
-    --border: #334155;
+    --background: #020617;
+    /* Slate 950 */
+    --surface: #0f172a;
+    /* Slate 900 */
+    --surface-glass: rgba(15, 23, 42, 0.7);
+
+    --text-primary: #f8fafc;
+    /* Slate 50 */
+    --text-secondary: #94a3b8;
+    /* Slate 400 */
+    --text-muted: #64748b;
+    /* Slate 500 */
+
+    --border: #1e293b;
+    /* Slate 800 */
   }
 }
 
@@ -57,15 +75,31 @@ body {
 }
 
 /* Typography */
-h1, h2, h3, h4, h5, h6 {
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
   font-weight: 700;
   letter-spacing: -0.025em;
   color: var(--text-primary);
 }
 
-h1 { font-size: 3rem; line-height: 1; }
-h2 { font-size: 2.25rem; line-height: 1.1; }
-h3 { font-size: 1.5rem; line-height: 1.25; }
+h1 {
+  font-size: 3rem;
+  line-height: 1;
+}
+
+h2 {
+  font-size: 2.25rem;
+  line-height: 1.1;
+}
+
+h3 {
+  font-size: 1.5rem;
+  line-height: 1.25;
+}
 
 /* Utilities */
 .container {
@@ -78,7 +112,7 @@ h3 { font-size: 1.5rem; line-height: 1.25; }
   background: var(--surface);
   border-radius: var(--radius-lg);
   box-shadow: var(--shadow-md);
-  padding: 2rem; /* Initial padding, adjust as needed */
+  padding: 1.5rem;
   border: 1px solid var(--border);
   transition: var(--transition);
 }
@@ -86,7 +120,16 @@ h3 { font-size: 1.5rem; line-height: 1.25; }
 .glass-card {
   background: var(--surface-glass);
   backdrop-filter: var(--glass-blur);
-  border: 1px solid rgba(255,255,255,0.2);
+  -webkit-backdrop-filter: var(--glass-blur);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.glass-panel {
+  background: rgba(255, 255, 255, 0.03);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  border-radius: var(--radius-md);
 }
 
 /* Inputs */
@@ -102,7 +145,8 @@ h3 { font-size: 1.5rem; line-height: 1.25; }
   color: var(--text-secondary);
 }
 
-.input, .textarea {
+.input,
+.textarea {
   width: 100%;
   padding: 0.75rem 1rem;
   border-radius: var(--radius-md);
@@ -114,7 +158,8 @@ h3 { font-size: 1.5rem; line-height: 1.25; }
   transition: var(--transition);
 }
 
-.input:focus, .textarea:focus {
+.input:focus,
+.textarea:focus {
   outline: none;
   border-color: var(--border-focus);
   box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.2);
@@ -172,12 +217,14 @@ h3 { font-size: 1.5rem; line-height: 1.25; }
 .loading-spinner {
   width: 1.5rem;
   height: 1.5rem;
-  border: 3px solid rgba(255,255,255,0.3);
+  border: 3px solid rgba(255, 255, 255, 0.3);
   border-radius: 50%;
   border-top-color: #fff;
   animation: spin 1s ease-in-out infinite;
 }
 
 @keyframes spin {
-  to { transform: rotate(360deg); }
+  to {
+    transform: rotate(360deg);
+  }
 }

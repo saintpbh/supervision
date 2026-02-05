@@ -1,52 +1,68 @@
 export interface ReportData {
-    // Step 1: Core
-    coreQuestion: string; // "Why this case? / What is the uncomfortable point?"
-
-    // Step 2: Facts (A)
+    id?: string; // Optional ID for saving
+    reportMode: 'efficiency' | 'academic';
     counselorName: string;
-    clientName: string; // Initials
+    clientName: string;
     clientAgeGender: string;
     counselingCount: string;
+
+    // Step 2: Facts
     triggerEvent: string;
     chiefComplaint: string;
-    familyRelations: string; // Brief summary
-    socialContext: string; // Job/School
+    familyRelations: string; // Only for Academic
+    socialContext: string; // Only for Academic
 
-    // Step 3: Judgment (B)
-    patternObservation: string; // "Repetitive pattern of..."
-    synthesis: string; // "Interaction between trait and stress..."
-    consideredIntervention: string; // "Although X was considered..."
-    selectedIntervention: string; // "...Y was prioritized"
-    hesitationReason: string; // "Counselor experienced hesitation because..."
-    counselingGoal: string; // "Focus on..."
+    // Step 3: Professional Judgment
+    patternObservation: string;
+    coreQuestion: string; // Key Difficulty
+    hesitationReason: string; // Counter-transference
+    synthesis: string; // Case Conceptualization
 
-    // Step 4: Evidence (C & D)
-    sessionSummary: string;
-    verbatim: string; // Dialogue
-    supervisionQuestions: string; // 1-2 questions
-    // New fields for Dual Mode
-    reportMode: 'efficiency' | 'academic';
-    fullTranscript?: string;
+    // Restored fields used in components
+    consideredIntervention?: string;
+    selectedIntervention?: string;
+    counselingGoal?: string;
+    supervisionQuestions?: string;
+
+    // Step 4: Transcript
+    verbatim: string; // Key Dialogue (Efficiency) or Full Transcript (Academic)
+    sessionSummary?: string; // Optional summary
+    fullTranscript?: string; // Explicit field for full transcript if needed separate
+}
+
+export interface ReportEntry {
+    id: string;
+    title: string;
+    createdAt: number;
+    updatedAt: number;
+    status: 'draft' | 'completed';
+    mode: 'efficiency' | 'academic';
+    data: ReportData;
 }
 
 export const initialReportData: ReportData = {
     reportMode: 'efficiency',
-    coreQuestion: '',
     counselorName: '',
     clientName: '',
     clientAgeGender: '',
     counselingCount: '',
+
     triggerEvent: '',
     chiefComplaint: '',
     familyRelations: '',
     socialContext: '',
+
     patternObservation: '',
+    coreQuestion: '',
+    hesitationReason: '',
     synthesis: '',
+
     consideredIntervention: '',
     selectedIntervention: '',
-    hesitationReason: '',
     counselingGoal: '',
-    sessionSummary: '',
-    verbatim: '',
     supervisionQuestions: '',
+
+    verbatim: '',
+    sessionSummary: '',
+    fullTranscript: ''
 };
