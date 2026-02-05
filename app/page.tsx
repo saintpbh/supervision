@@ -101,6 +101,14 @@ export default function Home() {
     setData(initialReportData);
     setStep(0);
     setView('wizard');
+    setShowTranscriptModal(false); // Ensure modal is closed when starting fresh
+  };
+
+  const handleStartWithTranscript = () => {
+    setData(initialReportData);
+    setStep(1); // Start directly at Step 1 (or 0 if you want style selection first, but user probably wants to fill data)
+    setView('wizard');
+    setShowTranscriptModal(true);
   };
 
   const returnToDashboard = () => {
@@ -196,6 +204,7 @@ export default function Home() {
           recordUsage(result.usage.promptTokens, result.usage.completionTokens, selectedModel);
         }
         setShowTranscriptModal(false);
+        setStep(1); // Ensure we are on Step 1 after analysis
         alert("축어록 분석이 완료되었습니다.");
       } else {
         const err = await response.text();
@@ -238,7 +247,7 @@ export default function Home() {
             <button className="btn btn-primary" onClick={handleStartNew} style={{ padding: '1rem 2.5rem', fontSize: '1.1rem', borderRadius: '50px' }}>
               + 새 보고서 작성하기
             </button>
-            <button className="btn btn-secondary" onClick={() => setShowTranscriptModal(true)} style={{ padding: '1rem 2.5rem', fontSize: '1.1rem', borderRadius: '50px' }}>
+            <button className="btn btn-secondary" onClick={handleStartWithTranscript} style={{ padding: '1rem 2.5rem', fontSize: '1.1rem', borderRadius: '50px' }}>
               ✨ 축어록에서 추출하기
             </button>
           </div>
