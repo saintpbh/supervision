@@ -103,22 +103,22 @@ export default function SettingsModal({ onClose }: SettingsModalProps) {
                 </div>
 
                 {/* Tabs */}
-                <div style={{ display: 'flex', borderBottom: '1px solid #eee' }}>
+                <div style={{ display: 'flex', borderBottom: '1px solid var(--border)' }}>
                     <button
                         onClick={() => setActiveTab('general')}
-                        style={{ flex: 1, padding: '1rem', border: 'none', background: activeTab === 'general' ? '#f3f4f6' : 'white', fontWeight: activeTab === 'general' ? 600 : 400, cursor: 'pointer' }}
+                        style={{ flex: 1, padding: '1rem', border: 'none', background: activeTab === 'general' ? 'rgba(99,102,241,0.1)' : 'transparent', color: activeTab === 'general' ? 'var(--primary)' : 'var(--text-secondary)', fontWeight: activeTab === 'general' ? 700 : 400, cursor: 'pointer', transition: 'var(--transition)' }}
                     >
                         🔑 일반 / API
                     </button>
                     <button
                         onClick={() => setActiveTab('data')}
-                        style={{ flex: 1, padding: '1rem', border: 'none', borderBottom: activeTab === 'data' ? '3px solid var(--primary)' : 'none', background: activeTab === 'data' ? 'rgba(99,102,241,0.05)' : 'white', fontWeight: activeTab === 'data' ? 700 : 400, cursor: 'pointer', transition: 'var(--transition)' }}
+                        style={{ flex: 1, padding: '1rem', border: 'none', borderBottom: activeTab === 'data' ? '3px solid var(--primary)' : 'none', background: activeTab === 'data' ? 'rgba(99,102,241,0.05)' : 'transparent', color: activeTab === 'data' ? 'var(--text-primary)' : 'var(--text-secondary)', fontWeight: activeTab === 'data' ? 700 : 400, cursor: 'pointer', transition: 'var(--transition)' }}
                     >
                         💾 백업/복구
                     </button>
                     <button
                         onClick={() => setActiveTab('usage')}
-                        style={{ flex: 1, padding: '1rem', border: 'none', borderBottom: activeTab === 'usage' ? '3px solid var(--primary)' : 'none', background: activeTab === 'usage' ? 'rgba(99,102,241,0.05)' : 'white', fontWeight: activeTab === 'usage' ? 700 : 400, cursor: 'pointer', transition: 'var(--transition)' }}
+                        style={{ flex: 1, padding: '1rem', border: 'none', borderBottom: activeTab === 'usage' ? '3px solid var(--primary)' : 'none', background: activeTab === 'usage' ? 'rgba(99,102,241,0.05)' : 'transparent', color: activeTab === 'usage' ? 'var(--text-primary)' : 'var(--text-secondary)', fontWeight: activeTab === 'usage' ? 700 : 400, cursor: 'pointer', transition: 'var(--transition)' }}
                     >
                         📈 AI 사용량
                     </button>
@@ -160,18 +160,18 @@ export default function SettingsModal({ onClose }: SettingsModalProps) {
                             </p>
 
                             {/* Auto Backup Section (New) */}
-                            <div style={{ marginBottom: '1.5rem', padding: '1rem', backgroundColor: '#eff6ff', borderRadius: '8px', border: '1px solid #bfdbfe' }}>
-                                <h4 style={{ marginBottom: '0.5rem', fontSize: '1rem', color: '#1e40af' }}>🔄 자동 백업 설정 (Beta)</h4>
-                                <p style={{ fontSize: '0.9rem', color: '#60a5fa', marginBottom: '1rem' }}>
+                            <div style={{ marginBottom: '1.5rem', padding: '1rem', backgroundColor: 'rgba(99, 102, 241, 0.1)', borderRadius: '8px', border: '1px solid var(--primary)' }}>
+                                <h4 style={{ marginBottom: '0.5rem', fontSize: '1rem', color: 'var(--primary)' }}>🔄 자동 백업 설정 (Beta)</h4>
+                                <p style={{ fontSize: '0.9rem', color: 'var(--text-secondary)', marginBottom: '1rem' }}>
                                     Chrome/Edge에서 지정된 폴더에 1분마다 자동 저장합니다.<br />
                                     (Google Drive 폴더를 지정하면 클라우드 동기화 가능)
                                 </p>
 
                                 <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '10px' }}>
-                                    <div style={{ fontSize: '0.9rem', fontWeight: 600 }}>
+                                    <div style={{ fontSize: '0.9rem', fontWeight: 600, color: 'var(--text-primary)' }}>
                                         {backupPath ? `📂 지정된 폴더: ${backupPath}` : '🚫 지정된 폴더 없음'}
                                     </div>
-                                    <button onClick={handleSelectFolder} style={{ fontSize: '0.8rem', padding: '4px 8px', border: '1px solid #ccc', borderRadius: '4px', background: 'white', cursor: 'pointer' }}>
+                                    <button onClick={handleSelectFolder} style={{ fontSize: '0.8rem', padding: '4px 8px', border: '1px solid var(--border)', borderRadius: '4px', background: 'var(--surface)', color: 'var(--text-primary)', cursor: 'pointer' }}>
                                         {backupPath ? '폴더 변경' : '폴더 지정'}
                                     </button>
                                 </div>
@@ -241,8 +241,8 @@ export default function SettingsModal({ onClose }: SettingsModalProps) {
                                 </div>
                             )}
 
-                            <div style={{ padding: '1rem', backgroundColor: '#fff7ed', borderRadius: '8px', border: '1px solid #ffedd5', marginBottom: '1.5rem' }}>
-                                <p style={{ fontSize: '0.85rem', color: '#9a3412', margin: 0, lineHeight: 1.5 }}>
+                            <div style={{ padding: '1rem', backgroundColor: 'rgba(249, 115, 22, 0.1)', borderRadius: '8px', border: '1px solid var(--secondary)', marginBottom: '1.5rem' }}>
+                                <p style={{ fontSize: '0.85rem', color: 'var(--text-secondary)', margin: 0, lineHeight: 1.5 }}>
                                     💡 <strong>Gemini Free Tier 안내:</strong> <br />
                                     Google AI Studio를 통해 발급받은 키는 무료 티어(분당 15회 요청 등) 범위 내에서 비용 발생 없이 사용 가능합니다. 위 비용은 참조용입니다.
                                 </p>

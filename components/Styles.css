@@ -16,6 +16,8 @@
     font-size: 1.125rem;
     margin-bottom: 2.5rem;
     line-height: 1.6;
+    font-weight: 500;
+    /* Increased from default */
 }
 
 .fade-in {
@@ -68,7 +70,8 @@
     margin: 2rem auto;
     padding: 4rem;
     background: white;
-    color: #1a1a1a;
+    color: #111827;
+    /* Darker Slate for better contrast */
     border-radius: var(--radius-md);
     box-shadow: var(--shadow-lg);
     font-family: 'Inter', system-ui, -apple-system, sans-serif;
