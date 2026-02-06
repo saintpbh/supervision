@@ -22,10 +22,10 @@ const analysisSchema = z.object({
 
 export async function POST(req: Request) {
     try {
-        const { transcript, selectedModel, apiKey, reportMode, sctData, mmpiData } = await req.json();
+        const { transcript, fileData, mimeType, selectedModel, apiKey, reportMode, sctData, mmpiData } = await req.json();
 
-        if (!transcript) {
-            return new Response('No transcript provided', { status: 400 });
+        if (!transcript && !fileData) {
+            return new Response('No transcript or file provided', { status: 400 });
         }
 
         const googleKey = apiKey || process.env.GOOGLE_GENERATIVE_AI_API_KEY;
@@ -33,11 +33,7 @@ export async function POST(req: Request) {
 
         let model;
 
-        // Check if keys are present (basic check)
-        // If no keys provided anywhere, use mock
         if (!googleKey && !openaiKey && !process.env.OPENAI_API_KEY && !process.env.GOOGLE_GENERATIVE_AI_API_KEY) {
-            // Mock response if no keys (for testing UI without keys)
-            // In production you would throw error
             console.warn("No API Keys found (Analyze). Returning mock data.");
             return Response.json({
                 clientName: "신OO",
@@ -46,7 +42,7 @@ export async function POST(req: Request) {
                 chiefComplaint: "사람들이 나를 무시하는 것 같아요.",
                 coreQuestion: "내담자의 침묵을 어떻게 다뤄야 할까요?",
                 sessionSummary: "내담자는 직장 동료와의 갈등을 이야기하던 중, 자신이 소외되고 있다는 느낌을 강하게 토로함. 상담자가 공감하려 했으나 내담자는 이를 거부하며 침묵함.",
-                verbatim: transcript // Echo back
+                verbatim: transcript || "Uploaded content analyzed."
             });
         }
 
@@ -55,41 +51,59 @@ export async function POST(req: Request) {
             const google = createGoogleGenerativeAI({ apiKey: googleKey });
             model = google('models/gemini-1.5-pro-latest');
         } else {
-            // Default to OpenAI
             if (!openaiKey) throw new Error("OpenAI API Key missing");
             const openai = createOpenAI({ apiKey: openaiKey });
             model = openai('gpt-4o');
         }
 
-        const result = await generateObject({
-            model: model,
-            schema: analysisSchema,
-            prompt: `
+        const messages: any[] = [
+            {
+                role: 'user',
+                content: [
+                    {
+                        type: 'text',
+                        text: `
         당신은 상담 심리 전문가이자 숙련된 수퍼바이저입니다. 
-        제공된 상담 축어록(Verbatim)을 분석하여 수퍼비전 보고서 작성을 위한 핵심 데이터를 추출하십시오.
+        제공된 데이터(텍스트 또는 이미지/PDF)를 분석하여 수퍼비전 보고서 작성을 위한 핵심 데이터를 추출하십시오.
         
         [보고서 유형]: ${reportMode === 'efficiency' ? '핵심형 (빠르고 간결한 요약 중심)' : '표준형 (심층 분석 및 학위/자격 심사용 상세 기술)'}
         
-        [Transcript]:
-        ${transcript}
+        ${transcript ? `[Text Transcript]:\n${transcript}` : ''}
         
         [Psychological Test Data]:
         - SCT: ${sctData || '제공되지 않음'}
         - MMPI-2: ${mmpiData || '제공되지 않음'}
 
         [수행 지침]:
-        1. 내담자의 인적사항(이름, 연령대, 성별)을 파악하십시오.
-        2. 내담자의 주 호소 문제(Chief Complaint)를 상담 심리학적 용어를 사용하여 기술하십시오. ${reportMode === 'efficiency' ? '가장 핵심적인 한 문장으로 압축하십시오.' : '상세하고 구체적으로 기술하십시오.'}
-        3. 내담자가 상담을 받게 된 촉발 사건(Trigger Event)을 객관적으로 서술하십시오.
-        4. 축어록의 맥락을 통해 상담자가 이번 회기에서 가장 고민하거나 수퍼바이저에게 묻고 싶어 하는 '핵심 질문(Core Question)'을 추론하십시오.
-        5. 세션 전체의 흐름을 상담 역동 중심으로 요약하십시오. ${reportMode === 'efficiency' ? '핵심 포인트 3-4개 위주로 간결하게 작성하십시오.' : '내담자와 상담자의 상호작용과 감정 변화를 포함하여 풍부하게 작성하십시오.'}
-        6. 내담자에게서 반복되는 행동 패턴이나 방어 기제 등의 '반복 패턴(Pattern Observation)'을 추출하십시오.
-        7. [핵심] 만약 심리검사 데이터(SCT, MMPI-2)가 제공되었다면, 해당 데이터를 전문적으로 해석하십시오(sctInterpretation, mmpiAnalysis).
-           - MMPI-2는 타당도 척도와 임상 척도의 상승 양상을 통해 성격 구조와 증상을 분석하십시오.
-           - SCT는 주요 반응에 투사된 무의식적 역동과 대상 관계를 파악하십시오.
-        8. 위 모든 분석을 종합하여 사례의 핵심을 꿰뚫는 '사례 개념화(Synthesis)'를 전문적으로 작성하십시오. 검사 결과가 실제 상담 장면에서의 내담자 모습과 어떻게 연결되는지(Clinical Integration)를 중점적으로 다루십시오.
-        9. 모든 답변은 전문적인 한국어로 작성하십시오.
-      `,
+        1. 이미지나 PDF가 제공된 경우, 해당 파일에서 상담 축어록 내용을 OCR하고 분석하십시오.
+        2. 내담자의 인적사항(이름, 연령대, 성별)을 파악하십시오.
+        3. 내담자의 주 호소 문제(Chief Complaint)를 상담 심리학적 용어를 사용하여 기술하십시오. ${reportMode === 'efficiency' ? '가장 핵심적인 한 문장으로 압축하십시오.' : '상세하고 구체적으로 기술하십시오.'}
+        4. 내담자가 상담을 받게 된 촉발 사건(Trigger Event)을 객관적으로 서술하십시오.
+        5. 데이터의 맥락을 통해 상담자가 이번 회기에서 가장 고민하거나 수퍼바이저에게 묻고 싶어 하는 '핵심 질문(Core Question)'을 추론하십시오.
+        6. 세션 전체의 흐름을 상담 역동 중심으로 요약하십시오. ${reportMode === 'efficiency' ? '핵심 포인트 3-4개 위주로 간결하게 작성하십시오.' : '내담자와 상담자의 상호작용과 감정 변화를 포함하여 풍부하게 작성하십시오.'}
+        7. 내담자에게서 반복되는 행동 패턴이나 방어 기제 등의 '반복 패턴(Pattern Observation)'을 추출하십시오.
+        8. [핵심] 만약 심리검사 데이터(SCT, MMPI-2)가 제공되었다면, 해당 데이터를 전문적으로 해석하십시오(sctInterpretation, mmpiAnalysis).
+        9. 위 모든 분석을 종합하여 사례의 핵심을 꿰뚫는 '사례 개념화(Synthesis)'를 전문적으로 작성하십시오.
+        10. 제공된 파일의 내용을 'verbatim' 필드에 텍스트로 복원하여 포함하십시오.
+        11. 모든 답변은 전문적인 한국어로 작성하십시오.
+      `
+                    }
+                ]
+            }
+        ];
+
+        if (fileData && mimeType) {
+            messages[0].content.push({
+                type: 'file',
+                data: fileData,
+                mimeType: mimeType
+            });
+        }
+
+        const result = await generateObject({
+            model: model,
+            schema: analysisSchema,
+            messages: messages
         });
 
         return Response.json({
@@ -102,3 +116,4 @@ export async function POST(req: Request) {
         return new Response(JSON.stringify({ error: 'Failed to analyze transcript' }), { status: 500 });
     }
 }
+

@@ -88,19 +88,20 @@ export default function Home() {
 
   const handleLoadReport = (entry: ReportEntry) => {
     setData(entry.data);
-    // Determine step based on status or data??
-    // For now, let's go to step 1 if draft, or show report if completed?
-    // Actually, user wants to "continue writing".
-    // Let's go to step 1.
-    setStep(1);
+    if (entry.status === 'completed') {
+      setShowReport(true);
+    } else {
+      setShowReport(false);
+      setStep(1);
+    }
     setView('wizard');
-    // If it has a mode, set it (it should be in data)
   };
 
   const handleStartNew = () => {
     setData(initialReportData);
     setStep(0);
     setView('wizard');
+    setShowReport(false);
     setShowTranscriptModal(false); // Ensure modal is closed when starting fresh
   };
 
@@ -114,6 +115,7 @@ export default function Home() {
   const returnToDashboard = () => {
     if (confirm('작성 중인 내용은 저장되지 않았을 수 있습니다. 나가시겠습니까?')) {
       setView('dashboard');
+      setShowReport(false);
       setReportList(getReports());
     }
   };
@@ -126,6 +128,31 @@ export default function Home() {
   const [isAnalyzing, setIsAnalyzing] = useState(false);
   const [showTranscriptModal, setShowTranscriptModal] = useState(false);
   const [transcriptText, setTranscriptText] = useState('');
+  const [uploadedFile, setUploadedFile] = useState<{ data: string, mimeType: string } | null>(null);
+
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    if (file.size > 10 * 1024 * 1024) {
+      alert("파일 크기는 10MB 이하만 가능합니다.");
+      return;
+    }
+
+    const reader = new FileReader();
+    reader.onload = (event) => {
+      const base64 = event.target?.result as string;
+      // reader.readAsDataURL returns something like "data:image/png;base64,..."
+      // We want just the base64 part for some APIs, but here we can pass it as is or strip it.
+      // Let's keep it as is for now and let the backend handle it or strip it here.
+      const data = base64.split(',')[1];
+      setUploadedFile({
+        data: data,
+        mimeType: file.type
+      });
+    };
+    reader.readAsDataURL(file);
+  };
 
   const handleNext = () => {
     if (step < totalSteps) setStep(step + 1);
@@ -181,7 +208,11 @@ export default function Home() {
           apiKey: apiKey,
           reportMode: data.reportMode,
           sctData: data.sctData,
-          mmpiData: data.mmpiData
+          mmpiData: data.mmpiData,
+          transcript: transcriptText,
+          fileData: uploadedFile?.data,
+          mimeType: uploadedFile?.mimeType,
+          selectedModel: selectedModel
         })
       });
 
@@ -345,7 +376,7 @@ export default function Home() {
         <div style={{ marginBottom: '1rem', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
           <div>
             <button className="btn btn-secondary" onClick={() => setShowReport(false)} style={{ marginRight: '10px' }}>수정하기</button>
-            <button className="btn btn-secondary" onClick={() => setView('dashboard')}>내 문서함으로 이동</button>
+            <button className="btn btn-secondary" onClick={() => { setShowReport(false); setView('dashboard'); }}>내 문서함으로 이동</button>
           </div>
           <div style={{ display: 'flex', gap: '10px', alignItems: 'center' }}>
             <select
@@ -563,17 +594,41 @@ export default function Home() {
                     </button>
                   </div>
 
-                  <p className="step-description">분석할 축어록 전체를 붙여넣으세요. AI가 상담 맥락을 분석하여 보고서 항목을 채워줍니다.</p>
+                  <p className="step-description">분석할 축어록 전체를 붙여넣거나, 이미지/PDF 파일을 업로드하세요. AI가 상담 맥락을 분석하여 보고서 항목을 채워줍니다.</p>
+
+                  <div style={{ marginBottom: '1.5rem' }}>
+                    <div style={{ display: 'flex', gap: '1rem', alignItems: 'center', marginBottom: '1rem' }}>
+                      <label
+                        className="btn btn-secondary"
+                        style={{ cursor: 'pointer', borderRadius: '12px', padding: '0.6rem 1.5rem', fontSize: '0.9rem', display: 'flex', alignItems: 'center', gap: '8px' }}
+                      >
+                        <span>📁</span> 파일 선택 (이미지/PDF)
+                        <input type="file" accept="image/*,.pdf" onChange={handleFileChange} style={{ display: 'none' }} />
+                      </label>
+                      {uploadedFile && (
+                        <span style={{ fontSize: '0.85rem', color: 'var(--primary)', fontWeight: 600 }}>
+                          ✅ 파일이 선택되었습니다 ({uploadedFile.mimeType})
+                          <button
+                            onClick={() => setUploadedFile(null)}
+                            style={{ background: 'none', border: 'none', color: '#ef4444', marginLeft: '8px', cursor: 'pointer' }}
+                          >
+                            삭제
+                          </button>
+                        </span>
+                      )}
+                    </div>
+                  </div>
+
                   <textarea
                     className="textarea"
-                    style={{ minHeight: '350px', fontSize: '1rem', borderRadius: '12px', background: 'rgba(0,0,0,0.2)', border: '1px solid var(--border)', color: 'var(--text-primary)' }}
+                    style={{ minHeight: '300px', fontSize: '1rem', borderRadius: '12px', background: 'rgba(0,0,0,0.2)', border: '1px solid var(--border)', color: 'var(--text-primary)' }}
                     value={transcriptText}
                     onChange={e => setTranscriptText(e.target.value)}
                     placeholder="(상담자): 안녕하세요.&#10;(내담자): 네, 안녕하세요..."
                   />
                   <div style={{ marginTop: '2rem', display: 'flex', justifyContent: 'flex-end', gap: '1rem' }}>
-                    <button className="btn btn-secondary" style={{ borderRadius: '12px', padding: '0.75rem 2rem' }} onClick={() => setShowTranscriptModal(false)}>취소</button>
-                    <button className="btn btn-primary" style={{ borderRadius: '12px', padding: '0.75rem 2.5rem' }} onClick={handleAnalyzeTranscript} disabled={isAnalyzing}>
+                    <button className="btn btn-secondary" style={{ borderRadius: '12px', padding: '0.75rem 2rem' }} onClick={() => { setShowTranscriptModal(false); setUploadedFile(null); }}>취소</button>
+                    <button className="btn btn-primary" style={{ borderRadius: '12px', padding: '0.75rem 2.5rem' }} onClick={handleAnalyzeTranscript} disabled={isAnalyzing || (!transcriptText.trim() && !uploadedFile)}>
                       {isAnalyzing ? '데이터 분석 중...' : '분석 및 자동 완성'}
                     </button>
                   </div>
