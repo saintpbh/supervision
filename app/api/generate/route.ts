@@ -5,24 +5,24 @@ import { createGoogleGenerativeAI } from '@ai-sdk/google';
 export const maxDuration = 30;
 
 export async function POST(req: Request) {
-    const { data, selectedModel, apiKey } = await req.json();
+    const { data, selectedModel, apiKey: clientApiKey } = await req.json();
 
-    // Prefer client-provided key, fallback to env var
-    const googleKey = apiKey || process.env.GOOGLE_GENERATIVE_AI_API_KEY;
-    const openaiKey = apiKey || process.env.OPENAI_API_KEY;
+    // Prefer server-side env var, then fallback to client-provided key
+    const googleKey = process.env.GOOGLE_GENERATIVE_AI_API_KEY || (selectedModel === 'gemini' ? clientApiKey : null);
+    const openaiKey = process.env.OPENAI_API_KEY || (selectedModel !== 'gemini' ? clientApiKey : null);
 
     let model;
 
     if (selectedModel === 'gemini') {
         if (!googleKey) {
-            return new Response('Google API Key not found. Please set API Key in Setup.', { status: 500 });
+            return new Response('Google API Key not found. Please set API Key in Environment or Setup.', { status: 500 });
         }
         const google = createGoogleGenerativeAI({ apiKey: googleKey });
         model = google('models/gemini-1.5-pro-latest');
     } else {
         // Default to OpenAI
         if (!openaiKey) {
-            return new Response('OpenAI API Key not found. Please set API Key in Setup.', { status: 500 });
+            return new Response('OpenAI API Key not found. Please set API Key in Environment or Setup.', { status: 500 });
         }
         const openai = createOpenAI({ apiKey: openaiKey });
         model = openai('gpt-4o');

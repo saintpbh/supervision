@@ -20,6 +20,7 @@ export default function Step4_Review({ data, updateData, onSubmit }: Props) {
                     value={data.sessionSummary}
                     onChange={e => updateData('sessionSummary', e.target.value)}
                     placeholder="오늘 세션에서 일어난 주요 사건 요약"
+                    autoFocus
                 />
             </div>
 

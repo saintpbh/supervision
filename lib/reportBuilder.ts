@@ -7,21 +7,35 @@ export function checkCompletion(data: ReportData, step: number): boolean {
   return true;
 }
 
+const theoryLabels: Record<string, string> = {
+  'psychoanalysis': '정신분석',
+  'object-relations': '대상관계',
+  'cbt': '인지행동(CBT)',
+  'humanistic': '인간중심',
+  'gestalt': '게슈탈트',
+  'none': '일반 분석'
+};
+
 export function generateReportHtml(data: ReportData, aiContent?: string): string {
   // If Academic Mode, use the extensive template
   if (data.reportMode === 'academic') {
     return generateAcademicReportHtml(data, aiContent);
   }
 
+  const theoryName = theoryLabels[data.counselingTheory || 'none'] || '일반 분석';
+
   // --- Efficiency Mode (Existing) ---
   const conceptualizationSection = aiContent ?
     `<!-- AI Generated Content -->
-     <p style="white-space: pre-wrap; color: #333; line-height: 1.8;">${aiContent}</p>` :
+     <div style="background: rgba(99, 102, 241, 0.03); padding: 1.5rem; border-radius: 12px; border-left: 4px solid var(--primary);">
+       <p style="margin-top: 0; font-weight: 800; color: var(--primary);">🧠 AI 사례 개념화 (${theoryName} 기반)</p>
+       <p style="white-space: pre-wrap; color: #333; line-height: 1.8; margin-bottom: 0;">${aiContent}</p>
+     </div>` :
     `<!-- Template Content -->
      <p><strong>1. 수퍼비전 요청 사유 (The Anchor)</strong><br>
      ${data.coreQuestion}</p>
 
-     <p><strong>2. 역동적 이해</strong><br>
+     <p><strong>2. 역동적 이해 (${theoryName})</strong><br>
      내담자에게서 ${data.patternObservation || '반복적인 패턴'}이 관찰된다. 
      이 사례는 ${data.synthesis || '내담자의 기질과 환경적 압박의 상호작용'}으로 이해된다.</p>
 
@@ -35,10 +49,26 @@ export function generateReportHtml(data: ReportData, aiContent?: string): string
      따라서 현재 상담의 초점은 ${data.counselingGoal || '정서적 안정감을 확보하는 것'}에 두고 있다.</p>`;
 
   return `
+    <style>
+      @media print {
+        body { background: white !important; }
+        .report-container { 
+            box-shadow: none !important; 
+            margin: 0 !important; 
+            padding: 2cm !important; 
+            width: 100% !important;
+            max-width: none !important;
+        }
+        .gradient-text { -webkit-background-clip: unset !important; -webkit-text-fill-color: black !important; color: black !important; }
+        .highlight-section { background: #f8fafc !important; border: 1px solid #e2e8f0 !important; }
+        button, aside, nav, .wizard-nav { display: none !important; }
+      }
+    </style>
     <div class="report-container">
       <h1 class="report-title">상담 수퍼비전 보고서 (Efficiency)</h1>
       <div class="meta-info">
         <p><strong>상담자:</strong> ${data.counselorName} | <strong>내담자:</strong> ${data.clientName} (${data.clientAgeGender}) | <strong>회기:</strong> ${data.counselingCount}</p>
+        <p style="margin-top: 5px; font-size: 0.9rem; color: var(--text-muted);"><strong>적용 이론:</strong> ${theoryName}</p>
       </div>
 
       <div class="section">
@@ -58,9 +88,21 @@ export function generateReportHtml(data: ReportData, aiContent?: string): string
         <div class="content-block">
             ${data.sctInterpretation || data.mmpiAnalysis ? `
             <div style="margin-bottom: 2rem; padding: 1.5rem; background: rgba(99, 102, 241, 0.05); border-radius: 12px; border: 1px solid rgba(99, 102, 241, 0.1);">
-                <h3 style="margin-top: 0; color: var(--primary); font-size: 1.1rem;">📊 심리검사 기반 임상적 소견</h3>
-                ${data.mmpiAnalysis ? `<p><strong>MMPI-2 분석:</strong> ${data.mmpiAnalysis}</p>` : ''}
-                ${data.sctInterpretation ? `<p><strong>SCT 해석:</strong> ${data.sctInterpretation}</p>` : ''}
+                <h3 style="margin-top: 0; color: var(--primary); font-size: 1.1rem; display: flex; align-items: center; gap: 8px;">
+                    <span style="font-size: 1.3rem;">📊</span> 심리검사 기반 임상적 소견
+                </h3>
+                <div style="display: grid; grid-template-columns: 1fr; gap: 1.5rem;">
+                    ${data.mmpiAnalysis ? `
+                    <div style="background: white; padding: 1rem; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.05);">
+                        <p style="margin-top: 0; font-weight: 700; color: #444; border-bottom: 1px solid #eee; padding-bottom: 5px; margin-bottom: 8px;">MMPI-2 분석</p>
+                        <p style="margin-bottom: 0; font-size: 0.95rem; line-height: 1.6;">${data.mmpiAnalysis}</p>
+                    </div>` : ''}
+                    ${data.sctInterpretation ? `
+                    <div style="background: white; padding: 1rem; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.05);">
+                        <p style="margin-top: 0; font-weight: 700; color: #444; border-bottom: 1px solid #eee; padding-bottom: 5px; margin-bottom: 8px;">SCT 해석</p>
+                        <p style="margin-bottom: 0; font-size: 0.95rem; line-height: 1.6;">${data.sctInterpretation}</p>
+                    </div>` : ''}
+                </div>
             </div>
             ` : ''}
             ${conceptualizationSection}
@@ -108,7 +150,8 @@ function generateAcademicReportHtml(data: ReportData, aiContent?: string): strin
                 <td style="padding: 10px; border-bottom: 1px solid #ddd;"><strong>상담 회기:</strong> ${data.counselingCount}</td>
              </tr>
              <tr>
-                <td style="padding: 10px;" colspan="2"><strong>상담 일시:</strong> 202X년 X월 X일</td>
+                <td style="padding: 10px; border-bottom: 1px solid #ddd;"><strong>적용 이론:</strong> ${theoryLabels[data.counselingTheory || 'none']}</td>
+                <td style="padding: 10px; border-bottom: 1px solid #ddd;"><strong>상담 일시:</strong> 202X년 X월 X일</td>
              </tr>
           </table>
         </div>
@@ -151,18 +194,22 @@ function generateAcademicReportHtml(data: ReportData, aiContent?: string): strin
               ${data.mmpiAnalysis || data.sctInterpretation ? `
                 <div class="test-results">
                     ${data.mmpiData ? `
-                    <div style="margin-bottom: 20px;">
-                        <h3 style="font-size: 1.1rem; color: #333;">1. MMPI-2 다면적 인성검사</h3>
-                        <p style="background: #f5f5f5; padding: 10px; border-radius: 4px; font-family: monospace;">데이터: ${data.mmpiData}</p>
-                        <p style="line-height: 1.7;"><strong>[임상적 해석]:</strong> ${data.mmpiAnalysis}</p>
+                    <div style="margin-bottom: 30px; border-left: 3px solid #333; padding-left: 15px;">
+                        <h3 style="font-size: 1.1rem; color: #000; margin-bottom: 10px;">1. MMPI-2 다면적 인성검사</h3>
+                        <div style="background: #f8f8f8; padding: 12px; border: 1px solid #eee; font-family: 'Courier New', monospace; margin-bottom: 10px; font-size: 0.9rem;">
+                            <strong>[Raw Data]:</strong> ${data.mmpiData}
+                        </div>
+                        <p style="line-height: 1.8; text-align: justify; margin-top: 10px;"><strong>[임상 소견]:</strong> ${data.mmpiAnalysis}</p>
                     </div>
                     ` : ''}
                     
                     ${data.sctData ? `
-                    <div style="margin-bottom: 20px;">
-                        <h3 style="font-size: 1.1rem; color: #333;">2. SCT 문장완성검사</h3>
-                        <p style="background: #f5f5f5; padding: 10px; border-radius: 4px; font-style: italic;">주요 반응: ${data.sctData}</p>
-                        <p style="line-height: 1.7;"><strong>[역동적 해석]:</strong> ${data.sctInterpretation}</p>
+                    <div style="margin-bottom: 30px; border-left: 3px solid #333; padding-left: 15px;">
+                        <h3 style="font-size: 1.1rem; color: #000; margin-bottom: 10px;">2. SCT 문장완성검사</h3>
+                        <div style="background: #f8f8f8; padding: 12px; border: 1px solid #eee; font-style: italic; margin-bottom: 10px; font-size: 0.9rem;">
+                            <strong>[핵심 반응]:</strong> ${data.sctData}
+                        </div>
+                        <p style="line-height: 1.8; text-align: justify; margin-top: 10px;"><strong>[역동 해석]:</strong> ${data.sctInterpretation}</p>
                     </div>
                     ` : ''}
                 </div>

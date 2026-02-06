@@ -21,6 +21,7 @@ export default function Step2_Facts({ data, updateData }: Props) {
                         className="input"
                         value={data.counselorName}
                         onChange={(e) => updateData('counselorName', e.target.value)}
+                        autoFocus
                     />
                 </div>
                 <div className="input-group">
@@ -36,7 +37,10 @@ export default function Step2_Facts({ data, updateData }: Props) {
 
             <div className="grid-2">
                 <div className="input-group">
-                    <label className="label">내담자 이니셜</label>
+                    <label className="label" style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+                        내담자 이니셜
+                        {data.clientName && <span className="ai-hint">✨</span>}
+                    </label>
                     <input
                         className="input"
                         value={data.clientName}
@@ -44,7 +48,10 @@ export default function Step2_Facts({ data, updateData }: Props) {
                     />
                 </div>
                 <div className="input-group">
-                    <label className="label">나이 / 성별</label>
+                    <label className="label" style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+                        나이 / 성별
+                        {data.clientAgeGender && <span className="ai-hint">✨</span>}
+                    </label>
                     <input
                         className="input"
                         value={data.clientAgeGender}
@@ -55,7 +62,10 @@ export default function Step2_Facts({ data, updateData }: Props) {
             </div>
 
             <div className="input-group">
-                <label className="label">촉발 사건 (Trigger)</label>
+                <label className="label" style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+                    촉발 사건 (Trigger)
+                    {data.triggerEvent && <span className="ai-hint">✨ 분석됨</span>}
+                </label>
                 <input
                     className="input"
                     value={data.triggerEvent}
@@ -65,7 +75,10 @@ export default function Step2_Facts({ data, updateData }: Props) {
             </div>
 
             <div className="input-group">
-                <label className="label">주 호소문제 (내담자의 언어)</label>
+                <label className="label" style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+                    주 호소문제 (내담자의 언어)
+                    {data.chiefComplaint && <span className="ai-hint">✨ 분석됨</span>}
+                </label>
                 <input
                     className="input"
                     value={data.chiefComplaint}
@@ -76,8 +89,9 @@ export default function Step2_Facts({ data, updateData }: Props) {
 
             <div className="input-group">
                 <label className="label">가족 관계 (간략히)</label>
-                <input
-                    className="input"
+                <textarea
+                    className="textarea"
+                    rows={2}
                     value={data.familyRelations}
                     onChange={(e) => updateData('familyRelations', e.target.value)}
                     placeholder="예: 소원한 아버지, 지지적인 어머니."
@@ -86,8 +100,9 @@ export default function Step2_Facts({ data, updateData }: Props) {
 
             <div className="input-group">
                 <label className="label">현재 상황 (직업/학교)</label>
-                <input
-                    className="input"
+                <textarea
+                    className="textarea"
+                    rows={2}
                     value={data.socialContext}
                     onChange={(e) => updateData('socialContext', e.target.value)}
                     placeholder="예: 대학교 휴학 중, 편의점 아르바이트"

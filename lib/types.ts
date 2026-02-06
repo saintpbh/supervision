@@ -34,6 +34,9 @@ export interface ReportData {
     mmpiData?: string; // MMPI-2 profile/results
     sctInterpretation?: string; // AI interpretation of SCT
     mmpiAnalysis?: string; // AI interpretation of MMPI-2
+
+    // Phase 2: Theory Integration
+    counselingTheory?: 'none' | 'psychoanalysis' | 'object-relations' | 'cbt' | 'humanistic' | 'gestalt';
 }
 
 export interface ReportEntry {
@@ -45,6 +48,13 @@ export interface ReportEntry {
     mode: 'efficiency' | 'academic';
     data: ReportData;
 }
+
+export const stepsList = [
+    { id: 1, title: '핵심 요구', icon: '❓' },
+    { id: 2, title: '내담자 정보', icon: '📄' },
+    { id: 3, title: '사례 개념화', icon: '🧠' },
+    { id: 4, title: '최종 검토', icon: '✅' }
+];
 
 export const initialReportData: ReportData = {
     reportMode: 'efficiency',
@@ -74,5 +84,6 @@ export const initialReportData: ReportData = {
     sctData: '',
     mmpiData: '',
     sctInterpretation: '',
-    mmpiAnalysis: ''
+    mmpiAnalysis: '',
+    counselingTheory: 'none'
 };

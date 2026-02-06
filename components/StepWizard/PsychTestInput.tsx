@@ -45,6 +45,7 @@ export default function PsychTestInput({ data, updateData }: Props) {
                     </label>
                     <textarea
                         className="textarea"
+                        rows={8}
                         placeholder="내담자의 주요 반응들을 입력하세요. (예: 1. 나에게 이상한 일이 생기면... 당황스럽다 / 2. 내 생각에 여자란... 이해하기 힘들다)"
                         value={data.sctData}
                         onChange={(e) => updateData('sctData', e.target.value)}
@@ -61,6 +62,7 @@ export default function PsychTestInput({ data, updateData }: Props) {
                     </label>
                     <textarea
                         className="textarea"
+                        rows={5}
                         placeholder="임상 척도 T-점수를 입력하세요. (예: L: 45, F: 62, K: 50, Hs: 70, D: 85, Hy: 65, Pd: 72, Mf: 50, Pa: 60, Pt: 78, Sc: 80, Ma: 55, Si: 68)"
                         value={data.mmpiData}
                         onChange={(e) => updateData('mmpiData', e.target.value)}

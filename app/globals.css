@@ -1,62 +1,50 @@
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap');
 
 :root {
   /* Premium Slate & Indigo Palette */
   --primary: #6366f1;
-  /* Indigo 500 */
   --primary-hover: #4f46e5;
-  /* Indigo 600 */
   --secondary: #ec4899;
-  /* Pink 500 */
-  --accent: #a855f7;
-  /* Purple 500 */
+  --accent: #8b5cf6;
+  --info: #3b82f6;
+  --success: #10b981;
 
   --background: #f8fafc;
-  /* Slate 50 */
   --surface: #ffffff;
-  --surface-glass: rgba(255, 255, 255, 0.7);
+  --surface-glass: rgba(255, 255, 255, 0.82);
 
   --text-primary: #0f172a;
-  /* Slate 900 */
-  --text-secondary: #475569;
-  /* Slate 600 */
-  --text-muted: #94a3b8;
-  /* Slate 400 */
+  --text-secondary: #334155;
+  --text-muted: #64748b;
   --text-on-primary: #ffffff;
 
   --border: #e2e8f0;
-  /* Slate 200 */
   --border-focus: #6366f1;
 
   /* Effects */
-  --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+  --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.1);
   --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
   --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
-  --glass-blur: blur(16px);
+  --shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+  --glass-blur: blur(20px);
   --radius-xl: 1.5rem;
   --radius-lg: 1rem;
   --radius-md: 0.75rem;
 
-  --transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 @media (prefers-color-scheme: dark) {
   :root {
     --background: #020617;
-    /* Slate 950 */
     --surface: #0f172a;
-    /* Slate 900 */
     --surface-glass: rgba(15, 23, 42, 0.9);
 
     --text-primary: #f8fafc;
-    /* Slate 50 */
     --text-secondary: #cbd5e1;
-    /* Slate 300 - Brighter than Slate 400 */
     --text-muted: #94a3b8;
-    /* Slate 400 - Brighter than Slate 500 */
 
     --border: #1e293b;
-    /* Slate 800 */
   }
 }
 
@@ -162,7 +150,7 @@ h3 {
 .textarea:focus {
   outline: none;
   border-color: var(--border-focus);
-  box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.2);
+  box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.2);
 }
 
 .textarea {
@@ -208,8 +196,9 @@ h3 {
 
 /* Gradient Text */
 .gradient-text {
-  background: linear-gradient(to right, var(--primary), var(--secondary));
+  background: linear-gradient(135deg, var(--primary), var(--accent));
   -webkit-background-clip: text;
+  background-clip: text;
   -webkit-text-fill-color: transparent;
 }
 
